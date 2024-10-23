@@ -1,0 +1,17 @@
+---
+- name: Output all environment variables
+  hosts: all
+  gather_facts: no
+  tasks:
+
+    - name: Display environment variables
+      debug:
+        msg: "{{ dro.contact_email }}"
+
+    - name: Display environment variables
+      debug:
+        msg: "{{ dro.contact_firstname }}"
+
+    - name: Display environment variables
+      debug:
+        msg: "{{ dro.contact_lastname }}"
