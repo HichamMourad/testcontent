@@ -2,16 +2,24 @@
 - name: Output all environment variables
   hosts: all
   gather_facts: no
+  
   tasks:
 
+    - name: Set fact for dro dictionary
+      set_fact:
+        dro:
+          contact_email: "{{ contact_email }}"
+          contact_firstname: "{{ contact_firstname }}"
+          contact_lastname: "{{ contact_lastname }}"
+          
     - name: Display environment variables
       debug:
-        msg: "{{ dro.contact_email }}"
+        msg: "{{ contact_email }}"
 
     - name: Display environment variables
       debug:
-        msg: "{{ dro.contact_firstname }}"
+        msg: "{{ contact_firstname }}"
 
     - name: Display environment variables
       debug:
-        msg: "{{ dro.contact_lastname }}"
+        msg: "{{ contact_lastname }}"
