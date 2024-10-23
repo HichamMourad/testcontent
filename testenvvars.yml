@@ -1,25 +1,25 @@
 ---
 - name: Output all environment variables
   hosts: all
-  gather_facts: no
-  
+  gather_facts: false
+
   tasks:
 
     - name: Set fact for dro dictionary
-      set_fact:
+      ansible.builtin.set_fact:
         dro:
           contact_email: "{{ contact_email }}"
           contact_firstname: "{{ contact_firstname }}"
           contact_lastname: "{{ contact_lastname }}"
-          
+
     - name: Display environment variables
-      debug:
+      ansible.builtin.debug:
         msg: "{{ contact_email }}"
 
     - name: Display environment variables
-      debug:
+      ansible.builtin.debug:
         msg: "{{ contact_firstname }}"
 
     - name: Display environment variables
-      debug:
+      ansible.builtin.debug:
         msg: "{{ contact_lastname }}"
