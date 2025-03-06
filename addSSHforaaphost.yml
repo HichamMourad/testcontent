@@ -1,0 +1,29 @@
+---
+- name: Deploy credentials for AAP host
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    username: admin
+    admin_password: ansible123!
+    ansible_host: controller.kyoyp9kn7i3a.svc.cluster.local
+
+  tasks:
+
+    - name: Add aws credential to automation controller
+      ansible.controller.credential:
+        name: SSH Controller credential
+        description: Creds to be able to SSH the contoller_host
+        organization: "Default"
+        state: present
+        credential_type: "Machine"
+        controller_username: "{{ username }}"
+        controller_password: "{{ admin_password }}"
+        controller_host: "https://{{ ansible_host }}"
+        validate_certs: false
+        inputs:
+          username: rhel
+          ssh_key_data: "{{lookup('file','/home/rhel/.ssh/id_rsa')}}"
+      register: controller_try
+      retries: 5
+      until: controller_try is not failed

@@ -1,0 +1,22 @@
+---
+- name: Get AWS S3 Buckets and Creators
+  hosts: localhost
+  gather_facts: no
+  vars:
+    aws_region: "us-east-1"
+  tasks:
+    - name: List all S3 buckets
+      amazon.aws.s3_bucket_info:
+        region: "{{ aws_region }}"
+      register: s3_buckets
+
+    - name: Get bucket owner information
+      community.aws.aws_s3:
+        mode: list
+      register: s3_owner_info
+
+    - name: Show bucket details
+      debug:
+        msg: "{{ item.name }} - Created by: {{ s3_owner_info.owner }}"
+      loop: "{{ s3_buckets.buckets }}"
+...
