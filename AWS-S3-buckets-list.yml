@@ -1,0 +1,13 @@
+---
+- name: List AWS S3 buckets and their creation dates
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: List S3 buckets
+      ansible.builtin.command: aws s3 ls --recursive --human-readable --query 'Buckets[].{Name:Name,CreationDate:CreationDate}'
+      register: s3_buckets
+      changed_when: false
+
+    - name: Print S3 buckets and their creation dates
+      ansible.builtin.debug:
+        var: s3_buckets.stdout_lines
