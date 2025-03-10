@@ -19,7 +19,7 @@
         controller_username: "{{ username }}"
         controller_password: "{{ admin_password }}"
         controller_host: "https://{{ ansible_host }}"
-        validate_certs: false  
+        validate_certs: false
         inputs:
           username: "{{ lookup('env', 'INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_ACCESS_KEY_ID') }}"
           password: "{{ lookup('env', 'INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_SECRET_ACCESS_KEY') }}"
@@ -113,7 +113,7 @@
         controller_host: "https://{{ ansible_host }}"
         validate_certs: false
         variables:
-            note: in production these passwords would be encrypted in vault
-            ansible_user: rhel
-            ansible_password: ansible123!
-            ansible_host: controller
+          note: in production these passwords would be encrypted in vault
+          ansible_user: rhel
+          ansible_password: ansible123!
+          ansible_host: controller
