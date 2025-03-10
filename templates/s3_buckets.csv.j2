@@ -1,0 +1,4 @@
+Bucket Name,Creation Date,Region,Creator,Tags
+{% for bucket in all_bucket_details %}
+"{{ bucket.name }}","{{ bucket.creation_date }}","{{ bucket.region }}","{{ bucket.creator }}","{% for key, value in bucket.tags.items() %}{{ key }}:{{ value }}{% if not loop.last %};{% endif %}{% endfor %}"
+{% endfor %}

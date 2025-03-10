@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AWS S3 Buckets Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .summary {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>AWS S3 Buckets Information</h1>
+    <p>Report generated on {{ ansible_date_time.date }} at {{ ansible_date_time.time }}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Bucket Name</th>
+                <th>Creation Date</th>
+                <th>Creator (From Tags)</th>
+                <th>Creator (From CloudTrail)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bucket in bucket_details %}
+            <tr>
+                <td>{{ bucket.name }}</td>
+                <td>{{ bucket.creation_date }}</td>
+                <td>{{ bucket.creator_from_tags }}</td>
+                <td>{{ bucket.creator_from_cloudtrail }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="summary">
+        Total buckets: {{ bucket_details | length }}
+    </div>
+</body>
+</html>
