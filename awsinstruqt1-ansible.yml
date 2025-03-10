@@ -8,7 +8,7 @@
     admin_password: ansible123!
 
   tasks:
-  
+
     - name: Add aws credential to automation controller
       ansible.controller.credential:
         name: aws_credential
@@ -21,11 +21,11 @@
         controller_host: "https://{{ ansible_host }}"
         validate_certs: false  
         inputs:
-          username: "{{ lookup('env','INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_ACCESS_KEY_ID') }}"
-          password: "{{ lookup('env','INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_SECRET_ACCESS_KEY') }}"
+          username: "{{ lookup('env', 'INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_ACCESS_KEY_ID') }}"
+          password: "{{ lookup('env', 'INSTRUQT_AWS_ACCOUNT_AWSACCOUNT_AWS_SECRET_ACCESS_KEY') }}"
       register: controller_try
       retries: 5
-      until: controller_try is not failed          
+      until: controller_try is not failed
 
     - name: Add EE to the controller instance
       ansible.controller.execution_environment:
@@ -92,7 +92,7 @@
         job_id: "{{ job.id }}"
         controller_username: "{{ username }}"
         controller_password: "{{ admin_password }}"
-        controller_host: "https://{{ ansible_host }}"        
+        controller_host: "https://{{ ansible_host }}"
         validate_certs: "false"
 
     - name: Launch a job template
@@ -111,7 +111,7 @@
         controller_username: "{{ username }}"
         controller_password: "{{ admin_password }}"
         controller_host: "https://{{ ansible_host }}"
-        validate_certs: false      
+        validate_certs: false
         variables:
             note: in production these passwords would be encrypted in vault
             ansible_user: rhel
