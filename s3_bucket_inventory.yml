@@ -1,69 +1,70 @@
 ---
 - name: Get AWS S3 Buckets Information
   hosts: localhost
-  gather_facts: no
-  
+  gather_facts: false
+
   vars:
     output_file: "aws_s3_buckets_{{ ansible_date_time.date }}.csv"
     temp_dir: "/tmp/s3_bucket_info"
-  
+
   tasks:
     - name: Create temporary directory
-      file:
+      ansible.builtin.file:
         path: "{{ temp_dir }}"
         state: directory
         mode: '0755'
-      
+
     - name: Get list of all S3 buckets
-      amazon.aws.aws_s3_bucket_info:
+      amazon.aws.s3_bucket_info:
       register: s3_buckets_result
 
     - name: Initialize results list
-      set_fact:
+      ansible.builtin.set_fact:
         all_bucket_details: []
 
     - name: Get region for each bucket
       block:
         - name: Get bucket location for each bucket
-          amazon.aws.aws_s3_bucket_info:
+          amazon.aws.s3_bucket_info:
             name: "{{ item.name }}"
           register: bucket_info
           loop: "{{ s3_buckets_result.buckets }}"
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Get bucket tagging if available
-          amazon.aws.aws_s3_bucket_tagging_info:
+          amazon.aws.s3_bucket_info:
             bucket_name: "{{ item.name }}"
           register: bucket_tags
           loop: "{{ s3_buckets_result.buckets }}"
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Get CloudTrail events for bucket creation (requires cloudtrail)
-          shell: >
-            aws cloudtrail lookup-events --lookup-attributes AttributeKey=ResourceName,AttributeValue={{ item.name }} --query 'Events[?contains(EventName, `CreateBucket`) == `true`]'
+          ansible.builtin.shell: >
+            aws cloudtrail lookup-events --lookup-attributes AttributeKey=ResourceName,AttributeValue={{ item.name }} \
+            --query 'Events[?contains(EventName, `CreateBucket`) == `true`]'
           register: creation_events
           loop: "{{ s3_buckets_result.buckets }}"
-          ignore_errors: yes
+          ignore_errors: true
 
         - name: Build bucket details list
-          set_fact:
-            all_bucket_details: "{{ all_bucket_details + [{'name': item.0.name, 
-                                                          'creation_date': item.0.creation_date | default('Unknown'),
-                                                          'region': (bucket_info.results[item.1].location | default('us-east-1')) if (bucket_info.results[item.1].location | default('')) != '' else 'us-east-1',
-                                                          'creator': creation_events.results[item.1].stdout | from_json | json_query('[0].Username') | default('Unknown'),
-                                                          'tags': bucket_tags.results[item.1].tags | default({}) }] }}"
+          ansible.builtin.set_fact:
+            all_bucket_details: "{{ all_bucket_details + [{'name': item.0.name,
+              'creation_date': item.0.creation_date | default('Unknown'),
+              'region': (bucket_info.results[item.1].location | default('us-east-1')) if (bucket_info.results[item.1].location | default('')) != '' else 'us-east-1',
+              'creator': creation_events.results[item.1].stdout | from_json | json_query('[0].Username') | default('Unknown'),
+              'tags': bucket_tags.results[item.1].tags | default({}) }] }}"
           loop: "{{ s3_buckets_result.buckets | zip(range(s3_buckets_result.buckets | length)) | list }}"
-          
+
     - name: Export bucket details to CSV
-      template:
+      ansible.builtin.template:
         src: templates/s3_buckets.csv.j2
         dest: "{{ output_file }}"
-      
+
     - name: Display results summary
-      debug:
+      ansible.builtin.debug:
         msg: "Exported details for {{ all_bucket_details | length }} S3 buckets to {{ output_file }}"
-        
+
     - name: Clean up temporary directory
-      file:
+      ansible.builtin.file:
         path: "{{ temp_dir }}"
         state: absent
